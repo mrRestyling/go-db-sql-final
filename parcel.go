@@ -34,7 +34,7 @@ func (s ParcelStore) Get(number int) (Parcel, error) {
 	// заполните объект Parcel данными из таблицы
 
 	p := Parcel{}
-	row := s.db.QueryRow("select number, client, status, address, created_at from Parcel where number =:number", sql.Named("number", number))
+	row := s.db.QueryRow("SELECT number, client, status, address, created_at FROM Parcel WHERE number =:number", sql.Named("number", number))
 	err := row.Scan(&p.Number, &p.Client, &p.Status, &p.Address, &p.CreatedAt)
 	if err != nil {
 		return p, err
@@ -70,7 +70,7 @@ func (s ParcelStore) GetByClient(client int) ([]Parcel, error) {
 
 	}
 
-	if err := rows.Err(); err != nil {
+	if err := rows.Err(); err != nil { // проверяем курсор на наличие ошибок
 		return nil, err
 	}
 
@@ -80,7 +80,7 @@ func (s ParcelStore) GetByClient(client int) ([]Parcel, error) {
 func (s ParcelStore) SetStatus(number int, status string) error {
 	// реализуйте обновление статуса в таблице parcel
 
-	_, err := s.db.Exec("UPDATE parcel SET status =:status where number=:number",
+	_, err := s.db.Exec("UPDATE parcel SET status =:status WHERE number=:number",
 		sql.Named("status", status), sql.Named("number", number))
 	if err != nil {
 		return err
@@ -92,7 +92,7 @@ func (s ParcelStore) SetAddress(number int, address string) error {
 	// реализуйте обновление адреса в таблице parcel
 	// менять адрес можно только если значение статуса registered
 
-	_, err := s.db.Exec("UPDATE parcel SET address = :address where number =:number and status=:status",
+	_, err := s.db.Exec("UPDATE parcel SET address = :address WHERE number =:number and status=:status",
 		sql.Named("address", address), sql.Named("number", number), sql.Named("status", ParcelStatusRegistered))
 	if err != nil {
 		return err
